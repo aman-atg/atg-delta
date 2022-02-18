@@ -1,8 +1,8 @@
 import axios from "axios";
 
 const api = axios.create({
-  // baseURL: process.env.REACT_APP_ENDPOINT_BASE_URL,
-  baseURL: "https://api.delta.exchange/v2/",
+  baseURL:
+    process.env.REACT_APP_ENDPOINT_BASE_URL || "https://api.delta.exchange/v2/",
   headers: {
     "Content-Type": "application/json",
   },
