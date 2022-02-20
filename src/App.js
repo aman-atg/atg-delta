@@ -25,9 +25,9 @@ function App() {
   }, []);
 
   useEffect(() => {
+    let localPrices = {};
     ws.current = new WebSocket("wss://production-esocket.delta.exchange");
     ws.current.onopen = () => {
-      let localPrices = {};
       console.log("WebSocket connection opened");
       if (symbols.length > 0) {
         console.log("subscribing to products", symbols);
@@ -45,26 +45,26 @@ function App() {
           })
         );
       }
+    };
 
-      ws.current.onmessage = (event) => {
-        const data = JSON.parse(event.data);
-        // console.log({ data, isValue: data.type === "v2/ticker" });
-        if (data.type === "v2/ticker") {
-          // console.log("mark price", data.mark_price, data.symbol.slice(0, -4));
+    ws.current.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      // console.log({ data, isValue: data.type === "v2/ticker" });
+      if (data.type === "v2/ticker") {
+        // console.log("mark price", data.mark_price, data.symbol.slice(0, -4));
 
-          localPrices[data.symbol] = parseFloat(data.mark_price).toFixed(4);
+        localPrices[data.symbol] = parseFloat(data.mark_price).toFixed(4);
 
-          if (data.mark_price === null) {
-            console.log("mark price is null", data);
-          }
-
-          // console.log(Object.keys(localPrices).length, symbols.length);
-          if (Object.keys(localPrices).length === symbols.length) {
-            setPrices(localPrices);
-            localPrices = {};
-          }
+        if (data.mark_price === null) {
+          console.log("mark price is null", data);
         }
-      };
+
+        // console.log(Object.keys(localPrices).length, symbols.length);
+        if (Object.keys(localPrices).length === symbols.length) {
+          setPrices(localPrices);
+          localPrices = {};
+        }
+      }
     };
 
     ws.current.onclose = () => console.log("WebSocket connection closed");
